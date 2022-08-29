@@ -17,4 +17,4 @@ Le but de ce projet est également pédagogique, il permettra d'étudier plusieu
 
 C'est AWS Cognito qui gère l'authentification.
 Seule une vérification de la signature de la requête (avec JWT) est effectuée sur cette API.
-Une duplication de l'email est effectuée dans la base de donnée pour les fonctions communautaires et l'inscription à la futur newsletter..
+Une duplication de l'email est toutefois effectuée dans la base de donnée MongoDB pour les fonctions communautaires et l'inscription à la futur newsletter.
