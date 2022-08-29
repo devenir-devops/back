@@ -1,0 +1,15 @@
+lexik_jose:
+    ttl: 1000
+    server_name: '%env(SL_JOSE_BRIDGE_SERVER_NAME)%'
+    key_index: '93wgUTMbJm8ZN7MUTQx7xYRpifPiY7GAaAZKTZ9Y3MI'
+    signature_algorithm: 'RS256'
+    audience: '%env(SL_JOSE_BRIDGE_AUDIENCE)%'
+    key_set_remote:
+        type: 'jku'
+        url: '%env(SL_JOSE_BRIDGE_KEYSET_URL)%'
+
+jose:
+    jku_factory:
+        enabled: true
+        client: 'httplug.client.acme' # The Httplug client
+        request_factory: 'Psr\Http\Message\RequestFactoryInterface'

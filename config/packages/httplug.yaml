@@ -1,0 +1,21 @@
+httplug:
+    plugins:
+        cache: # We use the cache plugin
+            cache_pool: 'cache.app' # We use the PSR-6 Cache service of the application
+            config:
+                default_ttl: 1800 # TTL set to 30 min
+        retry:
+            retry: 1
+
+    discovery:
+        client: 'auto'
+
+    clients:
+        app:
+            http_methods_client: true
+            plugins:
+                - 'httplug.plugin.content_length'
+                - 'httplug.plugin.redirect'
+        acme:
+            factory: 'httplug.factory.guzzle7'
+            plugins: ['httplug.plugin.cache'] # We enable the cache plugin for that client.
