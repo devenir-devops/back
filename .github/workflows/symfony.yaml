@@ -1,14 +1,12 @@
 # https://help.github.com/en/actions
-name: Full CI process for Symfony 5
+name: Full CI process for Symfony 6
 on:
   push:
     branches:
       - '*'
-env:
-  ES_HTTP_PORT: 9209
 jobs:
   symfony:
-    name: Symfony 5.4 (PHP ${{ matrix.php-versions }})
+    name: Symfony 6.1 (PHP ${{ matrix.php-versions }})
     # https://hub.docker.com/_/ubuntu/
     runs-on: ubuntu-22.04
     services:
@@ -20,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php-versions: ['8.0', '8.1']
+        php-versions: ['8.1']
     steps:
       # —— Setup Github actions 🐙 —————————————————————————————————————————————
       # https://github.com/actions/checkout (official)
