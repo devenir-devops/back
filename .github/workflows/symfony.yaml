@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - '*'
+env: # Environment variables
+  APP_ENV: test
 jobs:
   symfony:
     name: Symfony 6.1 (PHP ${{ matrix.php-versions }})
