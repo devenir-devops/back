@@ -27,7 +27,6 @@ final class AuthenticationSuccessListener
         $jwt_user = $event->getToken()->getUser();
         if ($jwt_user && !$jwt_user instanceof \App\Security\User) {
             $this->logger->error("User was not of type App\Security\User, was: %s", [get_class($jwt_user)]);
-            return;
         } elseif ($jwt_user instanceof \App\Security\User) {
             $user = $this->documentManager->getRepository(User::class)->findOneBy(['email' => $jwt_user->getEmail()]);
             if (!$user) {

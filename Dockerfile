@@ -23,9 +23,17 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
   && php /tmp/composer-setup.php --install-dir=/usr/bin --filename=composer
 
-USER www-data
 
-COPY --chown=www-data:www-data . /var/www/html
+RUN addgroup --gid 1000 www \
+    && adduser --uid 1000 --shell /bin/bash --home /var/www/html --ingroup www --no-create-home --disabled-password  www \
+    && chown -R www:www /var/www/html
+
+
+USER www
+
+
+
+COPY --chown=www:www . /var/www/html
 WORKDIR /var/www/html
 
 ENV APP_ENV=prod

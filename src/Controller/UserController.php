@@ -39,7 +39,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/', name: 'app_api_users')]
+    #[Route('/me', name: 'app_api_users')]
     public function users(DocumentManager $documentManager, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
