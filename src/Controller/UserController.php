@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -39,15 +40,22 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/me', name: 'app_api_users')]
+    #[Route('/me', name: 'app_api_users_me')]
     public function users(DocumentManager $documentManager, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('me')
             ->toArray();
-        $users = $documentManager->getRepository(User::class)->findAll();
-        return new Response(
-            $serializer->serialize($users, JsonEncoder::FORMAT, $context), 200, ['Content-Type' => 'application/json']
-        );
+
+        $user = $documentManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getEmail()]);
+        if($user) {
+            return new Response(
+                $serializer->serialize($user, JsonEncoder::FORMAT, $context), 200, ['Content-Type' => 'application/json']
+            );
+        } else {
+            return new Response(
+                $serializer->serialize(["error" => "user not found"], JsonEncoder::FORMAT, $context), 404, ['Content-Type' => 'application/json']
+            );
+        }
     }
 }

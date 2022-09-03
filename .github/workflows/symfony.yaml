@@ -60,6 +60,10 @@ jobs:
         run: |
           bin/console about
 
+      - name: Load Fixtures
+        run:  |
+          php bin/console doctrine:mongodb:fixtures:load --no-interaction
+
       - name: Run functionnal and unit tests
         run: |
           php bin/phpunit tests
