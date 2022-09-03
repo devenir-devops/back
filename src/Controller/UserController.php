@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -31,8 +30,8 @@ class UserController extends AbstractController
                 );
             }
         } else {
-            if($securityUser) {
-                $logger->error("User was not of type App\Security\User, was : " .get_class($securityUser) );
+            if ($securityUser) {
+                $logger->error("User was not of type App\Security\User, was : " . get_class($securityUser));
             }
         }
         return new JsonResponse(
@@ -41,21 +40,29 @@ class UserController extends AbstractController
     }
 
     #[Route('/me', name: 'app_api_users_me')]
-    public function users(DocumentManager $documentManager, SerializerInterface $serializer): Response
+    public function users(DocumentManager $documentManager, SerializerInterface $serializer, LoggerInterface $logger): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('me')
             ->toArray();
-
-        $user = $documentManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getEmail()]);
-        if($user) {
-            return new Response(
-                $serializer->serialize($user, JsonEncoder::FORMAT, $context), 200, ['Content-Type' => 'application/json']
-            );
+        $securityUser = $this->getUser();
+        if ($securityUser && $securityUser instanceof \App\Security\User) {
+            $user = $documentManager->getRepository(User::class)->findOneBy(['email' => $securityUser->getEmail()]);
+            if ($user) {
+                return new Response(
+                    $serializer->serialize($user, JsonEncoder::FORMAT, $context), 200, ['Content-Type' => 'application/json']
+                );
+            } else {
+                $logger->warning("User not found for email: " . $securityUser->getEmail());
+                return new JsonResponse(
+                    ["error" => "not found"], 404, ['Content-Type' => 'application/json']
+                );
+            }
         } else {
-            return new Response(
-                $serializer->serialize(["error" => "user not found"], JsonEncoder::FORMAT, $context), 404, ['Content-Type' => 'application/json']
+            return new JsonResponse(
+                ["error" => "internal error"], 500, ['Content-Type' => 'application/json']
             );
+
         }
     }
 }
