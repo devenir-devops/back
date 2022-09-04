@@ -18,13 +18,18 @@ class UserControllerTest extends WebTestCase
         $this->assertNotEmpty($content);
         /** @phpstan-ignore-next-line */
         $this->assertJson($content);
-        $response_parsed = \Safe\json_decode($content, true);
-        $this->assertArrayHasKey('email', $response_parsed);
-        $this->assertArrayHasKey('is_subscribed_to_newsletter', $response_parsed);
-        $this->assertArrayHasKey('first_login', $response_parsed);
-        $this->assertArrayHasKey('last_login', $response_parsed);
-        $this->assertArrayHasKey('cognito_id', $response_parsed);
-        $this->assertArrayHasKey('id', $response_parsed);
+        if (is_string($content)) {
+            $response_parsed = \Safe\json_decode($content, true);
+            if (is_array($response_parsed)) {
+                $this->assertArrayHasKey('email', $response_parsed);
+                $this->assertArrayHasKey('is_subscribed_to_newsletter', $response_parsed);
+                $this->assertArrayHasKey('first_login', $response_parsed);
+                $this->assertArrayHasKey('last_login', $response_parsed);
+                $this->assertArrayHasKey('cognito_id', $response_parsed);
+                $this->assertArrayHasKey('id', $response_parsed);
+            }
+        }
+
     }
 
     public function testNotFoundUserMe(): void
