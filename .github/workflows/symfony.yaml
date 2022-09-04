@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - '*'
+  pull_request:
+    branches:
+      - '*'
 env: # Environment variables
   APP_ENV: test
+  GH_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
 jobs:
   symfony:
     name: Symfony 6.1 (PHP ${{ matrix.php-versions }})
@@ -23,10 +27,14 @@ jobs:
       matrix:
         php-versions: ['8.1']
     steps:
+      - name: Install git
+        run: |
+          apt-get update
+          apt-get install -y git
       # —— Setup Github actions 🐙 —————————————————————————————————————————————
       # https://github.com/actions/checkout (official)
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # https://github.com/shivammathur/setup-php (community)
       - name: Setup PHP, extensions and composer with shivammathur/setup-php
@@ -69,3 +77,22 @@ jobs:
       - name: Run functionnal and unit tests
         run: |
           php bin/phpunit tests
+
+
+  semantic-release:
+    name: Semantic Release
+    needs: symfony
+    runs-on: ubuntu-22.04
+    steps:
+      # —— Setup Github actions 🐙
+      # https://github.com/actions/checkout (official)
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run Semantic Release
+        run: |
+          npx semantic-release

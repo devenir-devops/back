@@ -1,0 +1,28 @@
+# https://help.github.com/en/actions
+name: Dockerize
+on:
+  release:
+    types: [published]
+
+env: # Environment variables
+  APP_ENV: prod
+  GH_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
+jobs:
+  docker_build:
+    name: Build Docker image
+    # https://hub.docker.com/_/ubuntu/
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@master
+      - name: Kaniko build
+        uses: aevea/action-kaniko@master
+        with:
+          registry: rg.fr-par.scw.cloud/funcscwdevenirdevopssymfony6sfyp8ub
+          image: back
+          tag: ${{github.ref_name}}
+          username: ${{ secrets.SCW_DOCKER_USERNAME }}
+          password: ${{ secrets.SCW_DOCKER_PASSWORD }}
+
+      - name: Deploy to Scaleway Serverless Container
+        run: |
+          curl -X PATCH -H "X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}" "https://api.scaleway.com/containers/v1beta1/regions/${{ secrets.SCW_REGION }}/containers/${{secrets.SCW_CONTAINER_ID}}" -d '{"registry_image": "${{ secrets.SCW_REGISTRY }}/${{ secrets.SCW_CONTAINER_IMAGE }}:${{github.ref_name}}"}'

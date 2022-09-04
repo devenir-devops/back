@@ -1,0 +1,12 @@
+{
+  "branches": [{"name": "main"}],
+  "repositoryUrl": "git+https://github.com/devenir-devops/back.git",
+  "debug": true,
+  "ci": true,
+  "dryRun": false,
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/github"
+  ]
+}
