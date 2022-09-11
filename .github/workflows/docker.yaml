@@ -19,10 +19,11 @@ jobs:
         with:
           registry: rg.fr-par.scw.cloud/funcscwdevenirdevopssymfony6sfyp8ub
           image: back
+          cache: true
           tag: ${{github.ref_name}}
           username: ${{ secrets.SCW_DOCKER_USERNAME }}
           password: ${{ secrets.SCW_DOCKER_PASSWORD }}
 
       - name: Deploy to Scaleway Serverless Container
         run: |
-          curl -X PATCH -H "X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}" "https://api.scaleway.com/containers/v1beta1/regions/${{ secrets.SCW_REGION }}/containers/${{secrets.SCW_CONTAINER_ID}}" -d '{"registry_image": "${{ secrets.SCW_REGISTRY }}/${{ secrets.SCW_CONTAINER_IMAGE }}:${{github.ref_name}}"}'
+          curl -X PATCH -H "X-Auth-Token: ${{secrets.SCW_SECRET_KEY}}" "https://api.scaleway.com/containers/v1beta1/regions/${{secrets.SCW_REGION }}/containers/${{secrets.SCW_CONTAINER_ID}}" -d '{"registry_image": "${{ secrets.SCW_REGISTRY }}/${{ secrets.SCW_CONTAINER_IMAGE }}:${{github.ref_name}}"}'
