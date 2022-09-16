@@ -23,6 +23,7 @@ jobs:
           tag: ${{github.ref_name}}
           username: ${{ secrets.SCW_DOCKER_USERNAME }}
           password: ${{ secrets.SCW_DOCKER_PASSWORD }}
+          build_file: Dockerfile-apache
 
       - name: Deploy to Scaleway Serverless Container
         run: |
