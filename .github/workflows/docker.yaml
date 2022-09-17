@@ -24,6 +24,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
       - name: Kaniko build
         uses: aevea/action-kaniko@master
         with:
@@ -32,6 +33,6 @@ jobs:
           cache: true
           tag: ${{github.ref_name}}
           build_file: Dockerfile-apache
-          username: ${{ steps.login-ecr.outputs.docker_username }}
-          password: ${{ steps.login-ecr.outputs.docker_password }}
+          username: ${{ steps.login-ecr.outputs.docker_username_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
+          password: ${{ steps.login-ecr.outputs.docker_password_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
 
