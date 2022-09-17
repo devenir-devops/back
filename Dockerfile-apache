@@ -32,7 +32,7 @@ RUN echo 'SetEnv MONGODB_URL ${MONGODB_URL}' > /etc/apache2/conf-enabled/environ
     && echo 'SetEnv MONGODB_DB ${MONGODB_DB}' >> /etc/apache2/conf-enabled/environment.conf \
     && echo 'SetEnv APP_ENV ${APP_ENV}' >> /etc/apache2/conf-enabled/environment.conf
 
-RUN a2enmod rewrite && apache2ctl -t
+RUN a2enmod rewrite && a2enmod headers && apache2ctl -t
 
 USER www
 
