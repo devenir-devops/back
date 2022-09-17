@@ -12,19 +12,23 @@ jobs:
     name: Build Docker image
     # https://hub.docker.com/_/ubuntu/
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@master
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
       - name: Kaniko build
         uses: aevea/action-kaniko@master
         with:
-          registry: rg.fr-par.scw.cloud/funcscwdevenirdevopssymfony6sfyp8ub
+          registry: 107690616247.dkr.ecr.eu-west-3.amazonaws.com/back
           image: back
           cache: true
           tag: ${{github.ref_name}}
-          username: ${{ secrets.SCW_DOCKER_USERNAME }}
-          password: ${{ secrets.SCW_DOCKER_PASSWORD }}
           build_file: Dockerfile-apache
-
-      - name: Deploy to Scaleway Serverless Container
-        run: |
-          curl -X PATCH -H "X-Auth-Token: ${{secrets.SCW_SECRET_KEY}}" "https://api.scaleway.com/containers/v1beta1/regions/${{secrets.SCW_REGION }}/containers/${{secrets.SCW_CONTAINER_ID}}" -d '{"registry_image": "${{ secrets.SCW_REGISTRY }}/${{ secrets.SCW_CONTAINER_IMAGE }}:${{github.ref_name}}"}'
