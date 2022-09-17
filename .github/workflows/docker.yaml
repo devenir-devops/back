@@ -27,8 +27,11 @@ jobs:
       - name: Kaniko build
         uses: aevea/action-kaniko@master
         with:
-          registry: 107690616247.dkr.ecr.eu-west-3.amazonaws.com/back
+          registry: ${{ steps.login-ecr.outputs.registry }}
           image: back
           cache: true
           tag: ${{github.ref_name}}
           build_file: Dockerfile-apache
+          username: ${{ steps.login-ecr.outputs.docker_username }}
+          password: ${{ steps.login-ecr.outputs.docker_password }}
+
