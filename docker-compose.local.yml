@@ -1,0 +1,27 @@
+version: '3.6'
+
+services:
+  nginx:
+    volumes:
+      - ./:/var/www/html
+    restart: always
+
+  php-fpm:
+    build:
+      context: .
+    volumes:
+      - ./:/var/www/html
+      - vendors:/var/www/html/vendor
+    tmpfs:
+      - /var/www/html/var
+    environment:
+      - APP_ENV=dev
+  mongodb:
+    image: mongo:4.2.22
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: symfony
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+volumes:
+  db-data:
+  vendors:

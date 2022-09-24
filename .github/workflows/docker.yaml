@@ -25,14 +25,25 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Kaniko build
+      - name: Kaniko build php-fpm image
         uses: aevea/action-kaniko@master
         with:
           registry: ${{ steps.login-ecr.outputs.registry }}
           image: back
           cache: true
           tag: ${{github.ref_name}}
-          build_file: Dockerfile-apache
+          build_file: .docker/php-fpm/Dockerfile
+          username: ${{ steps.login-ecr.outputs.docker_username_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
+          password: ${{ steps.login-ecr.outputs.docker_password_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
+
+      - name: Kaniko build nginx image
+        uses: aevea/action-kaniko@master
+        with:
+          registry: ${{ steps.login-ecr.outputs.registry }}
+          image: back-nginx
+          cache: true
+          tag: ${{github.ref_name}}
+          build_file: .docker/nginx/Dockerfile
           username: ${{ steps.login-ecr.outputs.docker_username_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
           password: ${{ steps.login-ecr.outputs.docker_password_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
 
