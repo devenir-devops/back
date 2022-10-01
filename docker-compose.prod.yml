@@ -6,6 +6,9 @@ services:
     volumes:
       - public:/var/www/html/public
   php-fpm:
+    build:
+        dockerfile: .docker/php-fpm/Dockerfile-prod
+        context: .
     volumes:
       - public:/public/
 
