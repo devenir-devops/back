@@ -43,7 +43,7 @@ jobs:
           image: back-nginx
           cache: true
           tag: ${{github.ref_name}}
-          build_file: .docker/nginx_fargate/Dockerfile-prod
+          build_file: .docker/nginx_fargate/Dockerfile
           username: ${{ steps.login-ecr.outputs.docker_username_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
           password: ${{ steps.login-ecr.outputs.docker_password_107690616247_dkr_ecr_eu_west_3_amazonaws_com }}
 
