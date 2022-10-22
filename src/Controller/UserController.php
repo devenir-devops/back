@@ -26,7 +26,9 @@ class UserController extends AbstractController
                 $user->setIsSubscribedToNewsletter(true);
                 $documentManager->flush();
                 return new JsonResponse(
-                    ["success" => true], 200, ['Content-Type' => 'application/json']
+                    ["success" => true],
+                    200,
+                    ['Content-Type' => 'application/json']
                 );
             }
         } else {
@@ -35,12 +37,18 @@ class UserController extends AbstractController
             }
         }
         return new JsonResponse(
-            ["success" => false, "error" => "user not found"], 404, ['Content-Type' => 'application/json']
+            ["success" => false, "error" => "user not found"],
+            404,
+            ['Content-Type' => 'application/json']
         );
     }
 
     #[Route('/me', name: 'app_api_users_me')]
-    public function users(DocumentManager $documentManager, SerializerInterface $serializer, LoggerInterface $logger): Response
+    public function users(
+        DocumentManager $documentManager,
+        SerializerInterface $serializer,
+        LoggerInterface $logger
+    ): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('me')
@@ -50,17 +58,23 @@ class UserController extends AbstractController
             $user = $documentManager->getRepository(User::class)->findOneBy(['email' => $securityUser->getEmail()]);
             if ($user) {
                 return new Response(
-                    $serializer->serialize($user, JsonEncoder::FORMAT, $context), 200, ['Content-Type' => 'application/json']
+                    $serializer->serialize($user, JsonEncoder::FORMAT, $context),
+                    200,
+                    ['Content-Type' => 'application/json']
                 );
             } else {
                 $logger->warning("User not found for email: " . $securityUser->getEmail());
                 return new JsonResponse(
-                    ["error" => "not found"], 404, ['Content-Type' => 'application/json']
+                    ["error" => "not found"],
+                    404,
+                    ['Content-Type' => 'application/json']
                 );
             }
         } else {
             return new JsonResponse(
-                ["error" => "internal error"], 500, ['Content-Type' => 'application/json']
+                ["error" => "internal error"],
+                500,
+                ['Content-Type' => 'application/json']
             );
 
         }
