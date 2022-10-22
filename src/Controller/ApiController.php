@@ -28,7 +28,9 @@ class ApiController extends AbstractController
             }
             return new JsonResponse(
 
-                ["error" => "internal error"], 500, ['Content-Type' => 'application/json']
+                ["error" => "internal error"],
+                500,
+                ['Content-Type' => 'application/json']
             );
         }
     }
@@ -39,7 +41,9 @@ class ApiController extends AbstractController
         $careers = $documentManager->getRepository(Career::class)->findAll();
 
         return new Response(
-            $serializer->serialize($careers, 'json'), 200, ['Content-Type' => 'application/json']
+            $serializer->serialize($careers, 'json'),
+            200,
+            ['Content-Type' => 'application/json']
         );
     }
 
