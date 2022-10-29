@@ -24,26 +24,30 @@ final class AuthenticationSuccessListener
 
     public function __invoke(JWTAuthenticatedEvent $event): void
     {
-        $jwt_user = $event->getToken()->getUser();
-        if ($jwt_user && !$jwt_user instanceof \App\Security\User) {
-            $this->logger->error("User was not of type App\Security\User, was: %s", [get_class($jwt_user)]);
-        } elseif ($jwt_user instanceof \App\Security\User) {
-            $user = $this->documentManager->getRepository(User::class)->findOneBy(['email' => $jwt_user->getEmail()]);
-            if (!$user) {
-                $user = new User();
-                $user->setCognitoId($jwt_user->getUserIdentifier());
-                $user->setEmail($jwt_user->getEmail());
-                $user->setIsSubscribedToNewsletter(false);
-                $user->setLastLogin(new DateTime());
-                $user->setFirstLogin(new DateTime());
-                $this->documentManager->persist($user);
-                $this->documentManager->flush();
-            } else {
-                $user->setLastLogin(new DateTime());
-                $this->documentManager->persist($user);
-                $this->documentManager->flush();
-            }
+        $jwtUser = $event->getToken()->getUser();
+        if ($jwtUser && !$jwtUser instanceof User) {
+            $this->logger->error(
+                sprintf("User was not of type App\Document\User, was: %s", get_class($jwtUser)),
+                [$jwtUser]
+            );
+            return;
         }
+        $user = $this->documentManager->getRepository(User::class)->findOneBy(['email' => $jwtUser->getEmail()]);
+        if (!$user) {
+            $jwtUser->setLastLogin(new DateTime());
+            $jwtUser->setFirstLogin(new DateTime());
+            $this->documentManager->persist($jwtUser);
+            $this->documentManager->flush();
+            $event->getToken()->setUser($jwtUser);
+        } else {
+            $this->logger->info(sprintf("Returning user: %s", $user->getEmail()), [$user]);
+
+            $user->setLastLogin(new DateTime());
+            $this->documentManager->persist($user);
+            $this->documentManager->flush();
+            $event->getToken()->setUser($user);
+        }
+        $this->logger->info(sprintf("User logged in %s", $jwtUser->getEmail()), [$jwtUser]);
 
     }
 }

@@ -4,13 +4,14 @@ namespace App\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @MongoDB\Document
  */
-class User
+class User implements JWTUserInterface
 {
 
     /**
@@ -51,6 +52,7 @@ class User
      */
     private bool $is_subscribed_to_newsletter;
 
+
     function __construct()
     {
         $this->setIsSubscribedToNewsletter(false);
@@ -62,6 +64,32 @@ class User
     public function setIsSubscribedToNewsletter(bool $is_subscribed_to_newsletter): User
     {
         $this->is_subscribed_to_newsletter = $is_subscribed_to_newsletter;
+        return $this;
+    }
+
+    /**
+     * @param $username
+     * @param array $payload
+     * @return User
+     */
+    public static function createFromPayload($email, array $payload)
+    {
+
+        $user = new self();
+        $user->setCognitoId($payload['sub']);
+        $user->setRoles(["ROLE_USER"]);
+        $user->setEmail($email);
+
+        return $user;
+    }
+
+    /**
+     * @param array $array
+     * @return $this
+     */
+    private function setRoles(array $array)
+    {
+        $this->roles = $array;
         return $this;
     }
 
@@ -140,5 +168,23 @@ class User
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ["ROLE_USER"];
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }

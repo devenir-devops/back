@@ -7,7 +7,7 @@ security:
     providers:
         jwt:
             lexik_jwt:
-                class: 'App\Security\User'
+                class: 'App\Document\User'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

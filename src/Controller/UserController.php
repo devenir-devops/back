@@ -45,38 +45,29 @@ class UserController extends AbstractController
 
     #[Route('/me', name: 'app_api_users_me')]
     public function users(
-        DocumentManager $documentManager,
+        DocumentManager     $documentManager,
         SerializerInterface $serializer,
-        LoggerInterface $logger
+        LoggerInterface     $logger
     ): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('me')
             ->toArray();
-        $securityUser = $this->getUser();
-        if ($securityUser && $securityUser instanceof \App\Security\User) {
-            $user = $documentManager->getRepository(User::class)->findOneBy(['email' => $securityUser->getEmail()]);
-            if ($user) {
-                return new Response(
-                    $serializer->serialize($user, JsonEncoder::FORMAT, $context),
-                    200,
-                    ['Content-Type' => 'application/json']
-                );
-            } else {
-                $logger->warning("User not found for email: " . $securityUser->getEmail());
-                return new JsonResponse(
-                    ["error" => "not found"],
-                    404,
-                    ['Content-Type' => 'application/json']
-                );
-            }
-        } else {
-            return new JsonResponse(
-                ["error" => "internal error"],
-                500,
+        $user = $this->getUser();
+        $logger->info("User is " . $user->getEmail(), [$user]);
+        if ($user && $user instanceof User) {
+            return new Response(
+                $serializer->serialize($user, JsonEncoder::FORMAT, $context),
+                200,
                 ['Content-Type' => 'application/json']
             );
-
+        } else {
+            $logger->warning("User not found for email: " . $user->getEmail());
+            return new JsonResponse(
+                ["error" => "not found"],
+                404,
+                ['Content-Type' => 'application/json']
+            );
         }
     }
 }
